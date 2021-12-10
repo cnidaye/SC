@@ -3,6 +3,7 @@ package streaming;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class SocketDemo {
     public static void main(String[] args) throws Exception{
@@ -11,10 +12,11 @@ public class SocketDemo {
 
         Socket clientSocket = serverSocket.accept();
         OutputStream outputStream = clientSocket.getOutputStream();
+
+        Scanner scanner = new Scanner(System.in);
         while (true) {
-            String message = "Hello\r\n";
-            outputStream.write(message.getBytes());
-            Thread.sleep(1000);
+            String next = scanner.next() + "\r\n";
+            outputStream.write(next.getBytes() );
         }
     }
 }

@@ -13,7 +13,7 @@ import org.apache.flink.streaming.api.environment.LocalStreamEnvironment;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
 
-public class Demo1 {
+public class WordCount {
     public static void main(String[] args) throws Exception {
         LocalStreamEnvironment env = StreamExecutionEnvironment.createLocalEnvironment(2);
 
