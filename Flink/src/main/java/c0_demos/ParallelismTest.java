@@ -1,4 +1,4 @@
-package c0;
+package c0_demos;
 
 import org.apache.flink.api.common.RuntimeExecutionMode;
 import org.apache.flink.api.common.functions.FlatMapFunction;

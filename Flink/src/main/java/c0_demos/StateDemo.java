@@ -1,4 +1,4 @@
-package c0;
+package c0_demos;
 
 import org.apache.flink.streaming.api.environment.LocalStreamEnvironment;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;

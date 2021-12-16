@@ -10,6 +10,10 @@ object test03 {
 
     val rdd = sc.textFile("D:\\MyProject\\SC\\Data\\wc.txt")
 
+    rdd.persist()
+    rdd.cache()
+    rdd.checkpoint()
+
     val res = withStopWordsFiltered(rdd, Array('\t'), null)
 
     res.foreach(println)

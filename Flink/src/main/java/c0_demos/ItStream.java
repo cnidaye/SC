@@ -1,4 +1,4 @@
-package c0;
+package c0_demos;
 
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
