@@ -12,7 +12,8 @@ public class IntSource implements SourceFunction<Tuple2<Integer,Long>> {
             if(x == 2000) this.cancel();
             x += 1;
             long t = System.currentTimeMillis();
-            t += x%3==0 ? -10000 : 0;
+//            t += x%3==0 ? -10000 : 0;
+            t += -3000;
             System.out.println("Int: " + x + " Long: " + t);
             ctx.collect(new Tuple2<>(x,t));
             Thread.sleep(1000);

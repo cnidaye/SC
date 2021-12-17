@@ -23,7 +23,7 @@ public class Test1EventTime {
         env.setParallelism(2);
         DataStreamSource<Tuple2<Integer, Long>> source = env.addSource(new IntSource()).setParallelism(1);
 
-        WatermarkStrategy<Tuple2<Integer, Long>> strategy = WatermarkStrategy.<Tuple2<Integer, Long>>forBoundedOutOfOrderness(Duration.ofSeconds(2))
+        WatermarkStrategy<Tuple2<Integer, Long>> strategy = WatermarkStrategy.<Tuple2<Integer, Long>>forBoundedOutOfOrderness(Duration.ofSeconds(0))
                 .withTimestampAssigner(
                         (a, b) -> a.f1
                 );

@@ -16,7 +16,8 @@ public class Test0EventTime {
         env.setParallelism(2);
         DataStreamSource<Tuple2<Integer, Long>> source = env.addSource(new IntSource()).setParallelism(1);
 
-        WatermarkStrategy<Tuple2<Integer, Long>> strategy = WatermarkStrategy.<Tuple2<Integer, Long>>forBoundedOutOfOrderness(Duration.ofMillis(1500))
+        WatermarkStrategy<Tuple2<Integer, Long>> strategy = WatermarkStrategy
+                .<Tuple2<Integer, Long>>forBoundedOutOfOrderness(Duration.ofMillis(1000))
                 .withTimestampAssigner(
                         (a, b) -> a.f1
                 );
@@ -24,7 +25,6 @@ public class Test0EventTime {
         SingleOutputStreamOperator<Tuple2<Integer, Long>> src = source.assignTimestampsAndWatermarks(strategy);
 
         src.filter(x->true).print();
-
 
         env.execute();
 
