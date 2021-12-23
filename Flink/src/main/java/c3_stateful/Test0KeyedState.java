@@ -7,8 +7,10 @@ import org.apache.flink.api.common.state.ValueStateDescriptor;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
-
-public class KeyedStateTest {
+/*
+模拟滴滴打车， 每有同样的记录id，则输出行进公里数。
+ */
+public class Test0KeyedState {
     public static void main(String[] args) throws Exception {
 //        LocalStreamEnvironment env = StreamExecutionEnvironment.createLocalEnvironment(2);
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());

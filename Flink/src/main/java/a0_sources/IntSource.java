@@ -3,6 +3,10 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 
 //@Slf4j
+/*
+收集：自增数字，时间戳
+时间戳 逢三 减3s
+ */
 public class IntSource implements SourceFunction<Tuple2<Integer,Long>> {
     boolean isRunning = true;
     int x = 0;

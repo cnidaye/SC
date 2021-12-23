@@ -3,10 +3,11 @@ package c3_stateful;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
-import org.apache.flink.api.common.functions.RichFlatMapFunction;
-import org.apache.flink.api.common.state.*;
-import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.configuration.Configuration;
+import org.apache.flink.api.common.state.ListState;
+import org.apache.flink.api.common.state.ListStateDescriptor;
+import org.apache.flink.api.common.state.ReducingState;
+import org.apache.flink.api.common.state.ReducingStateDescriptor;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.runtime.state.FunctionInitializationContext;
 import org.apache.flink.runtime.state.FunctionSnapshotContext;
 import org.apache.flink.streaming.api.checkpoint.CheckpointedFunction;
@@ -15,59 +16,58 @@ import org.apache.flink.streaming.api.environment.LocalStreamEnvironment;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
 
-import java.util.LinkedList;
 
-public class OperatorStateTest {
+public class Test1OperatorState {
     public static void main(String[] args) throws Exception {
         LocalStreamEnvironment env = StreamExecutionEnvironment.createLocalEnvironment(2);
 
-        DataStreamSource<String> localhost = env.socketTextStream("localhost", 1234);
+        DataStreamSource<String> localhost = env.socketTextStream("localhost", 12345);
 
-        localhost.flatMap(new RichFlatMapFunction<String, String>() {
-            ListState<String> banned;
-            @Override
-            public void flatMap(String value, Collector<String> out) throws Exception {
-                for (String s : value.split(" ")) {
-                    out.collect(s);
-                }
-            }
-
-                    @Override
-                    public void open(Configuration parameters) throws Exception {
-                        this.banned = getRuntimeContext().getListState(new ListStateDescriptor<String>("bannedWords",))
-                    }
-                }).map(x -> new Tuple2(x,1))
-                .keyBy(0)
-                .sum(1)
-                .print();
+        localhost.flatMap(new FlowCountTestMapFunc())
+                        .print();
 
         env.execute();
     }
 }
 
 
-class BannedFlatMapFunction implements CheckpointedFunction, FlatMapFunction<String,String> {
-    private MapState<String,Integer> bannedWordsState;
-    private Long count = 0L;
+class FlowCountTestMapFunc implements FlatMapFunction<String,String>, CheckpointedFunction{
+    private ListState<Integer> state ;
+    private ListState<Integer> intBuffer;
+    private int k = 0; // 这个变量会一直保存在内存中！ 随着流计算的进行，一起递增
+    @Override
+    public void flatMap(String value, Collector<String> out) throws Exception {
+
+        for (String s : value.split(" ")) {
+            out.collect(s);
+            k++;
+        }
+        state.add(k);
+        if (value.equals("cnt")) {
+            StringBuilder sb = new StringBuilder();
+            for (Integer integer : state.get()) {
+                sb.append(integer);
+                sb.append(",");
+            }
+            System.out.println(Thread.currentThread()+":::"+sb);
+        }
+    }
+
     @Override
     public void snapshotState(FunctionSnapshotContext context) throws Exception {
-
+        /*
+        暂时忽略， 复习到checkpoint再说
+         */
     }
 
     @Override
     public void initializeState(FunctionInitializationContext context) throws Exception {
-        this.bannedWordsState = context
-                .getOperatorStateStore()
-                .get);
-        this.bannedWordsState.add("cnm");
-        this.bannedWordsState.add("cnm");
-        this.bannedWordsState.add("cnm");
-        this.bannedWordsState.add("cnm");
-    }
-
-    @Override
-    public void flatMap(String value, Collector<String> out) throws Exception {
-        this.bannedWordsState.
+         this.state = context.getOperatorStateStore().getListState(
+                new ListStateDescriptor<Integer>(
+                        "count",
+                        TypeInformation.of(Integer.class)
+                )
+        );
     }
 }
 
