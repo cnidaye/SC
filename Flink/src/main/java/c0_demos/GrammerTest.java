@@ -4,6 +4,8 @@ import a1_pojo.Item;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.LocalStreamEnvironment;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.ProcessFunction;
+import org.apache.flink.util.Collector;
 import org.junit.Test;
 
 public class GrammerTest {
@@ -19,6 +21,23 @@ public class GrammerTest {
                 .sum("score")
                 .map(x -> x.name +":::" +x.score)
                 .print();
+
+        env.execute();
+    }
+
+    @Test
+    public void test1() throws Exception {
+        LocalStreamEnvironment env = StreamExecutionEnvironment.createLocalEnvironment(2);
+
+        env.socketTextStream("localhost", 1234)
+                .process(
+                        new ProcessFunction<String, String>() {
+                            @Override
+                            public void processElement(String value, ProcessFunction<String, String>.Context ctx, Collector<String> out) throws Exception {
+                                System.out.println(value);
+                            }
+                        }
+                );
 
         env.execute();
     }
