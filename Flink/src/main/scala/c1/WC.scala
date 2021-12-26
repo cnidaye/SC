@@ -19,6 +19,8 @@ object WC {
     .reduce((a,b) => (a._1, a._2+b._2))
     .print()
 
+  env.readTextFile("")
+
   env.execute()
 
   }

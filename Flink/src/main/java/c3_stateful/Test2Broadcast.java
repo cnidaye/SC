@@ -13,6 +13,7 @@ import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.streaming.api.functions.co.BroadcastProcessFunction;
+import org.apache.flink.streaming.api.functions.co.KeyedBroadcastProcessFunction;
 import org.apache.flink.util.Collector;
 
 
@@ -20,6 +21,8 @@ import org.apache.flink.util.Collector;
 机制参考
 https://nightlies.apache.org/flink/flink-docs-master/docs/dev/datastream/fault-tolerance/broadcast_state/
 输出平均质量合格的产品
+主流：检测报告
+规则流：产品的合格标准
  */
 public class Test2Broadcast {
     public static void main(String[] args) throws Exception {
@@ -42,7 +45,7 @@ public class Test2Broadcast {
                     ValueState<Integer> sum;
 
                     @Override
-                    public void open(Configuration parameters) throws Exception {
+                    public void open(Configuration parameters) {
                         cnt = getRuntimeContext().getState(new ValueStateDescriptor<Integer>("count", Integer.class));
                         sum = getRuntimeContext().getState(new ValueStateDescriptor<Integer>("sum", Integer.class));
                     }
@@ -79,6 +82,13 @@ public class Test2Broadcast {
                     BasicTypeInfo.STRING_TYPE_INFO,
                             TypeInformation.of(new TypeHint<Item>() {
                     }));
+
+
+
+
+
+                    new MapStateDescriptor<String,Item>()
+
 
                     @Override
                     public void processElement(Tuple2<String, Long> value, BroadcastProcessFunction<Tuple2<String, Long>, String, String>.ReadOnlyContext ctx, Collector<String> out) throws Exception {

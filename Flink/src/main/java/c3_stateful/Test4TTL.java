@@ -23,7 +23,7 @@ public class Test4TTL {
 
         StateTtlConfig ttlConfig = StateTtlConfig
                 //数据的有效期
-                .newBuilder(Time.seconds(2))
+                .newBuilder(Time.seconds(6))
                 //更新策略
                 .setUpdateType(StateTtlConfig.UpdateType.OnCreateAndWrite)
                 /*
@@ -33,10 +33,6 @@ public class Test4TTL {
                  */
                 .setStateVisibility(StateTtlConfig.StateVisibility.NeverReturnExpired)
                 .build();
-
-        ListStateDescriptor<Integer> cacheState = new ListStateDescriptor<Integer>("cache",
-                Integer.class);
-        cacheState.enableTimeToLive(ttlConfig);
 
 
         env
@@ -48,7 +44,7 @@ public class Test4TTL {
                     ctx.collect(Tuple2.of(i,System.currentTimeMillis()));
                     i++;
                     Thread.sleep(1000);
-                    if(i == 6) Thread.sleep(5000);
+                    if(i == 12) Thread.sleep(3000);
                 }
             }
 
@@ -69,6 +65,7 @@ public class Test4TTL {
                             @Override
                             public void open(Configuration parameters) throws Exception {
                                 ListStateDescriptor<Integer> descriptor = new ListStateDescriptor<>("cache", Integer.class);
+                                descriptor.enableTimeToLive(ttlConfig);
                                 this.cache = getRuntimeContext().getListState(descriptor);
                             }
 
