@@ -26,6 +26,7 @@ object test1 {
     ).foreach(println)
 
 //    r2.map((a,b) => (a, b.sum)).foreach(println)
+    r1.checkpoint()
 
   }
 

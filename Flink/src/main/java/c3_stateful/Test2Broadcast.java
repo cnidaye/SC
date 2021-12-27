@@ -87,7 +87,6 @@ public class Test2Broadcast {
 
 
 
-                    new MapStateDescriptor<String,Item>()
 
 
                     @Override
