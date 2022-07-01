@@ -24,8 +24,8 @@ object test2 {
 
     val ds = df.as[Person]
 
-    ds.filter(p => p.age > 13)
-      .map(_)
+//    ds.filter(p => p.age > 13)
+//      .map(_)
   }
 }
 
