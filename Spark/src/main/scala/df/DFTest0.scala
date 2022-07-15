@@ -11,29 +11,16 @@ object DFTest0 {
     sc.setLogLevel("ERROR")
 
     val df = spark.read.option("header","true").csv("D:\\MyProject\\SC\\Spark\\src\\main\\scala\\df\\data.csv")
-
+    df.createOrReplaceTempView("t")
     spark.sql(
       """
-        |SELECT TERMINAL_ID, ERROR_CODE, START_TIME, MAX(TIME) END_TIME
-        |FROM
-        |(
-        |SELECT TERMINAL_ID, TIME,
-        |LAG(BASE_CODE,1,BASE_CODE) OVER (PARTITION BY TERMINAL_ID ORDER BY TIME) ERROR_CODE,
-        |MAX(BASE_TIME) OVER (PARTITION BY TERMINAL_ID ORDER BY TIME ) START_TIME
-        |FROM
-        | (
-        |SELECT
-        | TERMINAL_ID, ERROR_CODE, TIME,
-        | CASE WHEN SUM(FLAG) OVER (PARTITION BY TERMINAL_ID ORDER BY CONCAT(TIME,FLAG) DESC) = 0 THEN TIME ELSE '0' END AS BASE_TIME,
-        | CASE WHEN SUM(FLAG) OVER (PARTITION BY TERMINAL_ID ORDER BY CONCAT(TIME,FLAG) DESC) = 0 THEN ERROR_CODE ELSE '0' END AS BASE_CODE
-        |FROM
-        | (
-        |   SELECT TERMINAL_ID, ERROR_CODE, START_TIME TIME, 1 FLAG FROM T
-        |     UNION ALL
-        |   SELECT TERMINAL_ID, ERROR_CODE, END_TIME TIME, -1 FLAG FROM T
-        |   ) T0
-        |   ) T1
-        |   ) T2 GROUP BY TERMINAL_ID, ERROR_CODE, START_TIME
+        | select id, time, lead(time,1,time) over (partition by id order by concat(time,flag) desc) as lead_time,
+        |   case when sum(flag) over (partition by id order by concat(time,flag) desc) = 0
+        |   and lead(time,1,'pp') over (partition by id order by concat(time,flag) desc) != time then time else "0" end base_time
+        | from
+        | (select id, st time , 1 flag from t
+        | union all
+        | select id, et time, -1 flag from t) tmp
         |""".stripMargin
     )
       .show(false)
